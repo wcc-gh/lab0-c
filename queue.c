@@ -214,29 +214,38 @@ struct list_head *merge(struct list_head *l1,
                         struct list_head *l2,
                         bool descend)
 {
-    if (!l1)
-        return l2;
-    if (!l2)
-        return l1;
-
-    if (strcmp(list_entry(l1, element_t, list)->value,
-               list_entry(l2, element_t, list)->value) <= 0) {
-        if (descend) {
-            l2->next = merge(l1, l2->next, descend);
-            return l2;
+    LIST_HEAD(new);
+    struct list_head *cur;
+    cur = &new;
+    while (l1 && l2) {
+        if (strcmp(list_entry(l1, element_t, list)->value,
+                   list_entry(l2, element_t, list)->value) <= 0) {
+            if (descend) {
+                cur->next = l2;
+                l2 = l2->next;
+                cur = cur->next;
+            } else {
+                cur->next = l1;
+                l1 = l1->next;
+                cur = cur->next;
+            }
         } else {
-            l1->next = merge(l1->next, l2, descend);
-            return l1;
-        }
-    } else {
-        if (descend) {
-            l1->next = merge(l1->next, l2, descend);
-            return l1;
-        } else {
-            l2->next = merge(l1, l2->next, descend);
-            return l2;
+            if (descend) {
+                cur->next = l1;
+                l1 = l1->next;
+                cur = cur->next;
+            } else {
+                cur->next = l2;
+                l2 = l2->next;
+                cur = cur->next;
+            }
         }
     }
+    if (!l1)
+        cur->next = l2;
+    if (!l2)
+        cur->next = l1;
+    return new.next;
 }
 struct list_head *merge_sort(struct list_head *head, bool descend)
 {
