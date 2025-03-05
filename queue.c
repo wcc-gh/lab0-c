@@ -113,13 +113,13 @@ bool q_delete_mid(struct list_head *head)
 {
     if (!head || list_empty(head))
         return false;
-    int target = q_size(head) / 2;
-    struct list_head *cur = head->next;
-    for (int i = 0; i < target; i++) {
-        cur = cur->next;
+    struct list_head *slow = head->next, *fast = head->next;
+    while (fast != head && fast->next != head) {
+        slow = slow->next;
+        fast = fast->next->next;
     }
-    element_t *node = list_entry(cur, element_t, list);
-    list_del(cur);
+    element_t *node = list_entry(slow, element_t, list);
+    list_del(slow);
     free(node->value);
     free(node);
     return true;
