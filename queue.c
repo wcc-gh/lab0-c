@@ -20,7 +20,7 @@ void q_free(struct list_head *head)
     if (!head)
         return;
     element_t *node, *safe = NULL;
-    list_for_each_entry_safe (node, safe, head, list) {
+    list_for_each_entry_safe(node, safe, head, list) {
         free(node->value);
         free(node);
     }
@@ -103,7 +103,7 @@ int q_size(struct list_head *head)
         return 0;
     int len = 0;
     struct list_head *node;
-    list_for_each (node, head)
+    list_for_each(node, head)
         len++;
     return len;
 }
@@ -132,7 +132,7 @@ bool q_delete_dup(struct list_head *head)
         return false;
     element_t *node, *safe = NULL;
     bool del = false;
-    list_for_each_entry_safe (node, safe, head, list) {
+    list_for_each_entry_safe(node, safe, head, list) {
         if (&safe->list != head && strcmp(node->value, safe->value) == 0) {
             list_del(&node->list);
             free(node->value);
@@ -155,7 +155,7 @@ void q_swap(struct list_head *head)
         return;
     struct list_head *node, *safe;
     bool s = false;
-    list_for_each_safe (node, safe, head) {
+    list_for_each_safe(node, safe, head) {
         if (s)
             list_move(node, node->prev->prev);
         s = !s;
@@ -176,7 +176,7 @@ void q_reverse(struct list_head *head)
     if (!head || list_empty(head) || list_is_singular(head))
         return;
     struct list_head *node, *safe;
-    list_for_each_safe (node, safe, head) {
+    list_for_each_safe(node, safe, head) {
         rev(node);
     }
     rev(head);
@@ -192,7 +192,7 @@ void q_reverseK(struct list_head *head, int k)
     len = len / k * k;
     struct list_head *node, *safe, *start = NULL;
     int count = 0;
-    list_for_each_safe (node, safe, head) {
+    list_for_each_safe(node, safe, head) {
         count += 1;
         if (count > len)
             break;
@@ -341,4 +341,20 @@ int q_merge(struct list_head *head, bool descend)
     q_sort(new->q, descend);
 
     return q_size(new->q);
+}
+
+/*Shuffle the nodes in queue*/
+void q_shuffle(struct list_head *head)
+{
+    int len = q_size(head);
+    struct list_head *cur;
+    while (len) {
+        int random = rand() % len;
+        cur = head->next;
+        for (int i = 0; i < random; i++) {
+            cur = cur->next;
+        }
+        list_move_tail(cur, head);
+        len--;
+    }
 }
